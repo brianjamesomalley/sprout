@@ -1,0 +1,202 @@
+// ============================================
+// SPROUT UI BINDINGS
+// Pure DOM manipulation. No business logic.
+// ============================================
+
+// Initialize core engine
+const sprout = new SproutCore();
+
+// DOM elements
+const elements = {
+    avatarEmoji: document.getElementById('avatarEmoji'),
+    avatarAccessories: document.getElementById('avatarAccessories'),
+    messageBubble: document.getElementById('messageBubble'),
+    spendAmount: document.getElementById('spendAmount'),
+    logSpendBtn: document.getElementById('logSpendBtn'),
+    newTaskInput: document.getElementById('newTaskInput'),
+    addTaskBtn: document.getElementById('addTaskBtn'),
+    taskList: document.getElementById('taskList'),
+    whyBtn: document.getElementById('whyBtn'),
+    glitchBtn: document.getElementById('glitchBtn'),
+    resetPanderBtn: document.getElementById('resetPanderBtn'),
+    avatarTapZone: document.getElementById('avatarTapZone'),
+    careBtn: document.getElementById('careBtn')
+};
+
+// Local care tasks array (UI state)
+let careTasks = [
+    { id: "t1", text: "drink a glass of water", done: false },
+    { id: "t2", text: "stand up for 10 seconds", done: false },
+    { id: "t3", text: "eat literally anything", done: false }
+];
+
+// Helper: Wiggle animation
+function wiggleAvatar() {
+    const avatar = document.querySelector('.avatar');
+    avatar.classList.add('wiggle');
+    setTimeout(() => avatar.classList.remove('wiggle'), 300);
+}
+
+// Helper: Update message bubble
+function updateMessageBubble(content, isGlitch = false) {
+    elements.messageBubble.innerHTML = content;
+    if (isGlitch) {
+        elements.messageBubble.classList.add('glitch');
+    } else {
+        elements.messageBubble.classList.remove('glitch');
+    }
+}
+
+// Update avatar display from core patterns
+function updateAvatar() {
+    const accessories = sprout.getAvatarAccessories();
+    elements.avatarAccessories.innerHTML = accessories.join(' ') + (accessories.length ? ' ' : '');
+}
+
+// Render care tasks list
+function renderTasks() {
+    if (!elements.taskList) return;
+    
+    elements.taskList.innerHTML = '';
+    careTasks.forEach(task => {
+        const div = document.createElement('div');
+        div.className = 'care-task';
+        div.innerHTML = `
+            <input type="checkbox" ${task.done ? 'checked' : ''} data-id="${task.id}">
+            <span style="flex:1; ${task.done ? 'text-decoration:line-through; color:#b0a07c;' : ''}">${task.text}</span>
+            <button data-del="${task.id}" style="background:#e8dccc; border:none; border-radius:30px; padding:4px 12px; cursor:pointer;">🗑️</button>
+        `;
+        elements.taskList.appendChild(div);
+    });
+    
+    // Bind checkbox events
+    document.querySelectorAll('.care-task input[type="checkbox"]').forEach(cb => {
+        cb.removeEventListener('change', handleTaskCheck);
+        cb.addEventListener('change', handleTaskCheck);
+    });
+    
+    // Bind delete events
+    document.querySelectorAll('.care-task button[data-del]').forEach(btn => {
+        btn.removeEventListener('click', handleTaskDelete);
+        btn.addEventListener('click', handleTaskDelete);
+    });
+}
+
+function handleTaskCheck(e) {
+    const id = e.target.getAttribute('data-id');
+    const task = careTasks.find(t => t.id === id);
+    if (task) {
+        task.done = e.target.checked;
+        if (task.done) {
+            sprout.completeCareTask(task.text);
+            updateMessageBubble(`🧡 nice. "${task.text}" counts. seriously.`);
+            updateAvatar();
+        }
+        renderTasks();
+    }
+}
+
+function handleTaskDelete(e) {
+    const id = e.target.getAttribute('data-del');
+    careTasks = careTasks.filter(t => t.id !== id);
+    renderTasks();
+}
+
+function addNewTask(text) {
+    if (!text.trim()) return;
+    careTasks.push({
+        id: Date.now().toString(),
+        text: text.trim(),
+        done: false
+    });
+    renderTasks();
+    elements.newTaskInput.value = '';
+    sprout.recordInteraction();
+    updateMessageBubble(`✨ added "${text.trim()}" — no pressure, just presence.`);
+}
+
+// Auto-pander interval (every 90 seconds)
+let panderInterval = setInterval(() => {
+    const result = sprout.getNextMessage();
+    if (result.message) {
+        updateMessageBubble(result.message, result.isGlitch);
+        updateAvatar();
+        if (result.isGlitch) wiggleAvatar();
+    }
+}, 90 * 1000);
+
+// Event bindings
+function bindEvents() {
+    // Avatar tap = record interaction + gentle feedback
+    elements.avatarTapZone.addEventListener('click', () => {
+        sprout.recordInteraction();
+        updateMessageBubble("👋 thanks. that's all i needed. you can go back to whatever.");
+        updateAvatar();
+    });
+    
+    // Log spend
+    elements.logSpendBtn.addEventListener('click', () => {
+        const amount = parseFloat(elements.spendAmount.value);
+        if (amount && !isNaN(amount)) {
+            const result = sprout.logSpend(amount);
+            if (result.patternDetected) {
+                updateMessageBubble(`💰 logged $${amount}. (i noticed you've done this on Fridays before. not judging. just... noticing.)`);
+            } else {
+                updateMessageBubble(`💰 logged $${amount}. no judgment. your avatar might change later.`);
+            }
+            elements.spendAmount.value = '';
+            updateAvatar();
+            wiggleAvatar();
+        } else {
+            updateMessageBubble("🌱 enter a number. even $1 counts. i'm not the IRS.");
+        }
+    });
+    
+    // Add task
+    elements.addTaskBtn.addEventListener('click', () => {
+        addNewTask(elements.newTaskInput.value);
+    });
+    elements.newTaskInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addNewTask(elements.newTaskInput.value);
+    });
+    
+    // Why button
+    elements.whyBtn.addEventListener('click', () => {
+        const insight = sprout.getSelfInsight();
+        updateMessageBubble(`🤔 ${insight}`);
+        sprout.recordInteraction();
+        updateAvatar();
+    });
+    
+    // Force glitch button
+    elements.glitchBtn.addEventListener('click', () => {
+        const glitch = sprout.forceGlitch();
+        updateMessageBubble(glitch.message, true);
+        wiggleAvatar();
+        updateAvatar();
+    });
+    
+    // Reset pandering
+    elements.resetPanderBtn.addEventListener('click', () => {
+        const result = sprout.resetPanderTimer();
+        updateMessageBubble(result.message);
+        updateAvatar();
+    });
+    
+    // Care task quick-add focus
+    elements.careBtn.addEventListener('click', () => {
+        elements.newTaskInput.focus();
+        updateMessageBubble("💚 add a tiny care task. 'exist' counts. 'breathe' counts. i'm serious.");
+    });
+}
+
+// Initialize
+function init() {
+    renderTasks();
+    bindEvents();
+    updateAvatar();
+    updateMessageBubble("🌱 sprout is awake. i get weird when ignored. tap me anytime.");
+}
+
+// Start the app
+init();
