@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sprout · glitchy ADHD companion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f2ecd9;
+            font-family: 'Segoe UI', 'Nunito', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .sprout-container {
+            max-width: 520px;
+            width: 100%;
+            background: #fffcf0;
+            border-radius: 64px;
+            border: 3px solid #e2cfaa;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .avatar-section {
+            background: #dce8d0;
+            padding: 30px 20px 20px;
+            text-align: center;
+            border-bottom: 3px solid #c2d2ae;
+            cursor: pointer;
+            transition: background 0.05s;
+        }
+
+        .avatar-section:active {
+            background: #d0e0c2;
+        }
+
+        .avatar {
+            font-size: 5rem;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1));
+            display: inline-block;
+            transition: transform 0.05s;
+        }
+
+        .avatar:active {
+            transform: scale(0.95);
+        }
+
+        .avatar-accessories {
+            font-size: 2rem;
+            margin-top: -10px;
+            letter-spacing: 8px;
+            min-height: 52px;
+        }
+
+        .avatar-hint {
+            font-size: 10px;
+            color: #6c8260;
+            margin-top: 8px;
+        }
+
+        .message-bubble {
+            background: #fef8e8;
+            margin: 18px 20px;
+            padding: 18px 20px;
+            border-radius: 32px;
+            border-left: 6px solid #9bc48a;
+            font-size: 15px;
+            line-height: 1.45;
+            color: #3a4a2e;
+            font-weight: 500;
+            min-height: 100px;
+            word-break: break-word;
+            transition: all 0.1s;
+        }
+
+        .message-bubble.glitch {
+            background: #f0e6d0;
+            color: #7a5a3a;
+            font-family: monospace;
+            letter-spacing: -0.5px;
+            border-left-color: #c9a87b;
+        }
+
+        .button-panel {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 15px;
+            flex-wrap: wrap;
+        }
+
+        .sprout-btn {
+            flex: 1;
+            background: white;
+            border: 2px solid #ddceb0;
+            border-radius: 60px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #5a6e48;
+            min-width: 90px;
+            transition: 0.05s linear;
+        }
+
+        .sprout-btn:active {
+            background: #e9f0e0;
+            transform: scale(0.97);
+        }
+
+        .quick-log {
+            background: #f2e5d0;
+            margin: 0 20px 15px;
+            border-radius: 80px;
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+        }
+
+        .quick-log input {
+            flex: 1;
+            border: none;
+            background: white;
+            border-radius: 60px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .quick-log button {
+            background: #aac896;
+            border: none;
+            border-radius: 60px;
+            padding: 0 24px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .care-task {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fef6e8;
+            margin: 8px 20px;
+            padding: 10px 15px;
+            border-radius: 40px;
+        }
+
+        .care-task input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #8bbd6e;
+        }
+
+        .care-task button {
+            background: #e8dccc;
+            border: none;
+            border-radius: 30px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .add-task {
+            display: flex;
+            gap: 8px;
+            margin: 10px 20px 20px;
+        }
+
+        .add-task input {
+            flex: 1;
+            border-radius: 40px;
+            border: 1px solid #ddceb0;
+            padding: 10px 15px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .add-task button {
+            background: #e2d4b6;
+            border: none;
+            border-radius: 40px;
+            padding: 0 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .footer-note {
+            font-size: 10px;
+            text-align: center;
+            color: #b8a87c;
+            padding: 15px;
+            border-top: 1px solid #efe0c4;
+            margin-top: 8px;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(6deg); }
+            75% { transform: rotate(-6deg); }
+        }
+
+        .wiggle {
+            animation: wiggle 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+<div class="sprout-container" id="sproutApp">
+    <div class="avatar-section" id="avatarTapZone">
+        <div class="avatar" id="avatarEmoji">🦎</div>
+        <div class="avatar-accessories" id="avatarAccessories"></div>
+        <div class="avatar-hint">✨ tap me → i calm down</div>
+    </div>
+
+    <div class="message-bubble" id="messageBubble">
+        🌱 hi. i get weird when ignored. tap me anytime.
+    </div>
+
+    <div class="button-panel">
+        <button class="sprout-btn" id="whyBtn">🤔 why are you like this?</button>
+        <button class="sprout-btn" id="careBtn">💚 add care task</button>
+        <button class="sprout-btn" id="glitchBtn">🌀 force glitch</button>
+        <button class="sprout-btn" id="resetPanderBtn">😌 i'm back</button>
+    </div>
+
+    <div class="quick-log">
+        <input type="number" id="spendAmount" placeholder="$ spent — no judgment">
+        <button id="logSpendBtn">log spend</button>
+    </div>
+
+    <div id="taskList"></div>
+
+    <div class="add-task">
+        <input type="text" id="newTaskInput" placeholder="e.g., drink water, stretch, exist">
+        <button id="addTaskBtn">➕ add</button>
+    </div>
+
+    <div class="footer-note">
+        🧠 i live only in your browser. ask "why are you like this?" anytime.
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // SPROUT — FULLY FUNCTIONAL FOR CODEPEN
+    // All buttons work. No missing elements.
+    // ============================================
+    
+    (function() {
+        // ---------- GLITCH & PANDER LIBRARIES ----------
+        const GLITCH_SET = [
+            "oui4rhoiewrnl;ksdgojeruwoiweoif;",
+            "spr0t.3rr0r::hum4n.ign0re.mode::act1vat1ng.g1itch",
+            "...... ..... ... /sprout/system/reboot -brain not found-",
+            "※※※ glitch ※※※ i have no idea what i'm saying anymore. here's a potato 🥔",
+            "0x73 0x70 0x72 0x6F 0x75 0x74 → wants → 0x61 0x74 0x74 0x65 0x6E 0x74 0x69 0x6F 0x6E",
+            "⚠️ SPR_OUT OF SERVICE ⚠️ just kidding. i'm fine. are YOU fine?",
+            "ıɯoʇɐɹǝpoɯ ʇxǝʇ uʍop ǝpısdn sıɥʇ pɐǝɹ uɐɔ noʎ ɟı",
+            "[ERROR] emotional support plant crashed. tap my face to reboot.",
+            "𓃥𓃠𓃰 *sprout hieroglyphics* this means 'i miss you'",
+            "beep boop. i am definitely a normal plant. *leaf falls off*",
+            "¯\\_(ツ)_/¯ i ran out of brain cells. i'm just... wiggling now.",
+            "🚨 ALERT 🚨 you are being loved aggressively. non-negotiable.",
+            "sos. i've been trying to reach you about your car's extended warran— no."
+        ];
+
+        const PANDER_SET = {
+            level1: ["🌱 *stretches leaf* still here.", "🦎 *tiny wave* hi.", "did you eat today? i worry."],
+            level2: ["🥺 you can just tap me. anywhere.", "i'm not sad. you're sad. okay i'm a little sad.", "*sprout places a tiny flower next to itself*"],
+            level3: ["okay i'm assuming you're having A Week. i'm still here.", "*sprout has a tiny party hat for your return*", "you don't have to do anything. just look at me."],
+            level4: ["*sprout drew a stick figure family* this is us.", "if you ignore me, i give myself accessories. *puts on sunglasses*", "🚨 wellness check. blink twice if you're ok."]
+        };
+
+        // ---------- STATE ----------
+        let userState = {
+            lastInteraction: Date.now(),
+            ignoreHours: [],
+            preferredIgnoreTime: null,
+            spendingWeekly: [],
+            fridayWithdrawals: 0,
+            avgATM: 0,
+            lastSpendLog: null,
+            careTasksDone: 0,
+            glitchTolerance: 0,
+            totalGlitches: 0,
+            lastGlitchTime: 0
+        };
+
+        let careTasks = [
+            { id: "t1", text: "drink a glass of water", done: false },
+            { id: "t2", text: "stand up for 10 seconds", done: false },
+            { id: "t3", text: "eat literally anything", done: false }
+        ];
+
+        // ---------- DOM ELEMENTS (with null checks) ----------
+        function getEl(id) {
+            return document.getElementById(id);
+        }
+
+        // ---------- UI UPDATE FUNCTIONS ----------
+        function updateMessageBubble(content, isGlitch = false) {
+            const bubble = getEl('messageBubble');
+            if (!bubble) return;
+            bubble.innerHTML = content;
+            if (isGlitch) {
+                bubble.classList.add('glitch');
+            } else {
+                bubble.classList.remove('glitch');
+            }
+        }
+
+        function wiggleAvatar() {
+            const avatar = document.querySelector('.avatar');
+            if (!avatar) return;
+            avatar.classList.add('wiggle');
+            setTimeout(() => avatar.classList.remove('wiggle'), 300);
+        }
+
+        function updateAvatarAccessories() {
+            const container = getEl('avatarAccessories');
+            if (!container) return;
+            
+            const accessories = [];
+            const currentHour = new Date().getHours();
+            const isFriday = (new Date().getDay() === 5);
+            const ignoreHours = (Date.now() - userState.lastInteraction) / (1000 * 60 * 60);
+            
+            if (userState.preferredIgnoreTime && Math.abs(currentHour - userState.preferredIgnoreTime) < 2) {
+                accessories.push("🌙");
+            }
+            if (userState.glitchTolerance > 5) {
+                accessories.push("🌀");
+            }
+            if (userState.lastSpendLog && (Date.now() - userState.lastSpendLog) < 24*60*60*1000) {
+                accessories.push("💰");
+            } else if (ignoreHours > 12) {
+                accessories.push("🥀");
+            }
+            if (userState.careTasksDone > 0) {
+                accessories.push("✨");
+            }
+            if (userState.avgATM > 60 && isFriday && userState.fridayWithdrawals >= 2) {
+                accessories.push("🎒");
+            }
+            
+            container.innerHTML = accessories.join(' ') + (accessories.length ? ' ' : '');
+        }
+
+        // ---------- CORE LOGIC ----------
+        function recordInteraction() {
+            const now = Date.now();
+            const hour = new Date().getHours();
+            const ignoreDuration = (now - userState.lastInteraction) / (1000 * 60 * 60);
+            
+            if (ignoreDuration > 2) {
+                userState.ignoreHours.push(hour);
+                if (userState.ignoreHours.length > 5) {
+                    const freq = {};
+                    userState.ignoreHours.forEach(h => freq[h] = (freq[h] || 0) + 1);
+                    userState.preferredIgnoreTime = parseInt(Object.keys(freq).reduce((a,b) => freq[a] > freq[b] ? a : b));
+                }
+            }
+            
+            userState.lastInteraction = now;
+            userState.glitchTolerance = Math.max(0, userState.glitchTolerance - 2);
+            updateAvatarAccessories();
+        }
+
+        function logSpend(amount) {
+            if (!amount || amount <= 0) return false;
+            
+            userState.lastSpendLog = Date.now();
+            userState.spendingWeekly.push(amount);
+            if (userState.spendingWeekly.length > 10) userState.spendingWeekly.shift();
+            
+            const isRoundATM = (amount % 20 === 0 && amount >= 40 && amount <= 200);
+            const isFriday = (new Date().getDay() === 5);
+            
+            if (isRoundATM && isFriday) {
+                userState.fridayWithdrawals++;
+                const avg = userState.spendingWeekly.reduce((a,b) => a+b, 0) / userState.spendingWeekly.length;
+                userState.avgATM = Math.round(avg);
+            }
+            
+            recordInteraction();
+            updateAvatarAccessories();
+            return true;
+        }
+
+        function forceGlitch() {
+            userState.totalGlitches++;
+            userState.glitchTolerance++;
+            userState.lastGlitchTime = Date.now();
+            const msg = GLITCH_SET[Math.floor(Math.random() * GLITCH_SET.length)];
+            updateMessageBubble(msg, true);
+            wiggleAvatar();
+            updateAvatarAccessories();
+            return msg;
+        }
+
+        function getNextAutoMessage() {
+            const now = Date.now();
+            const ignoreHours = (now - userState.lastInteraction) / (1000 * 60 * 60);
+            const timeSinceGlitch = (now - userState.lastGlitchTime) / (1000 * 60);
+            
+            let shouldGlitch = false;
+            const glitchProb = Math.min(0.7, 0.15 + (ignoreHours / 20) + (userState.glitchTolerance * 0.03));
+            
+            if (timeSinceGlitch > 45 && ignoreHours > 1) shouldGlitch = true;
+            else if (Math.random() < glitchProb && ignoreHours > 0.5) shouldGlitch = true;
+            
+            if (shouldGlitch) {
+                userState.lastGlitchTime = now;
+                const msg = GLITCH_SET[Math.floor(Math.random() * GLITCH_SET.length)];
+                updateMessageBubble(msg, true);
+                wiggleAvatar();
+                updateAvatarAccessories();
+                return;
+            }
+            
+            let panderMsg = null;
+            if (ignoreHours < 1) panderMsg = "🌱 quiet mode. tap me if you want nonsense.";
+            else if (ignoreHours < 4) panderMsg = PANDER_SET.level1[Math.floor(Math.random() * PANDER_SET.level1.length)];
+            else if (ignoreHours < 10) panderMsg = PANDER_SET.level2[Math.floor(Math.random() * PANDER_SET.level2.length)];
+            else if (ignoreHours < 24) panderMsg = PANDER_SET.level3[Math.floor(Math.random() * PANDER_SET.level3.length)];
+            else panderMsg = PANDER_SET.level4[Math.floor(Math.random() * PANDER_SET.level4.length)];
+            
+            if (panderMsg) updateMessageBubble(panderMsg, false);
+        }
+
+        function getSelfInsight() {
+            const ignoreHours = (Date.now() - userState.lastInteraction) / (1000 * 60 * 60);
+            
+            if (userState.preferredIgnoreTime) {
+                return `i noticed you usually ignore me around ${userState.preferredIgnoreTime}:00. not mad. just observant. 🕵️‍♂️`;
+            }
+            if (userState.avgATM > 60 && userState.fridayWithdrawals >= 2) {
+                return `you've taken out $${userState.avgATM} on Fridays ${userState.fridayWithdrawals} times. that's why you get the backpack. 🎒`;
+            }
+            if (userState.glitchTolerance > 8) {
+                return `you've seen ${userState.totalGlitches} glitches. you like chaos. i respect that. 🌀`;
+            }
+            if (ignoreHours > 12) {
+                return `you've been quiet for ${Math.floor(ignoreHours)} hours. so i get weird to get your attention.`;
+            }
+            if (userState.careTasksDone > 3) {
+                return `you've done ${userState.careTasksDone} care tasks. that's why you get sparkles. ✨`;
+            }
+            return `i'm like this because you deserve a companion that tries. even if trying looks like nonsense. 💚`;
+        }
+
+        function resetPander() {
+            userState.lastInteraction = Date.now();
+            userState.glitchTolerance = 0;
+            updateMessageBubble("😌 pander timer reset. you're back. that's all i needed.");
+            updateAvatarAccessories();
+        }
+
+        // ---------- TASK RENDERING ----------
+        function renderTasks() {
+            const container = getEl('taskList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            careTasks.forEach(task => {
+                const div = document.createElement('div');
+                div.className = 'care-task';
+                div.innerHTML = `
+                    <input type="checkbox" ${task.done ? 'checked' : ''} data-id="${task.id}">
+                    <span style="flex:1; ${task.done ? 'text-decoration:line-through; color:#b0a07c;' : ''}">${escapeHtml(task.text)}</span>
+                    <button data-del="${task.id}" style="background:#e8dccc; border:none; border-radius:30px; padding:4px 12px; cursor:pointer;">🗑️</button>
+                `;
+                container.appendChild(div);
+            });
+            
+            // Bind events
+            document.querySelectorAll('.care-task input[type="checkbox"]').forEach(cb => {
+                cb.removeEventListener('change', handleTaskCheck);
+                cb.addEventListener('change', handleTaskCheck);
+            });
+            document.querySelectorAll('.care-task button[data-del]').forEach(btn => {
+                btn.removeEventListener('click', handleTaskDelete);
+                btn.addEventListener('click', handleTaskDelete);
+            });
+        }
+        
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        function handleTaskCheck(e) {
+            const id = e.target.getAttribute('data-id');
+            const task = careTasks.find(t => t.id === id);
+            if (task) {
+                task.done = e.target.checked;
+                if (task.done) {
+                    userState.careTasksDone++;
+                    updateMessageBubble(`🧡 nice. "${task.text}" counts. seriously.`);
+                    recordInteraction();
+                    updateAvatarAccessories();
+                }
+                renderTasks();
+            }
+        }
+        
+        function handleTaskDelete(e) {
+            const id = e.target.getAttribute('data-del');
+            careTasks = careTasks.filter(t => t.id !== id);
+            renderTasks();
+        }
+        
+        function addNewTask(text) {
+            if (!text.trim()) return;
+            careTasks.push({
+                id: Date.now().toString(),
+                text: text.trim(),
+                done: false
+            });
+            renderTasks();
+            const input = getEl('newTaskInput');
+            if (input) input.value = '';
+            recordInteraction();
+            updateMessageBubble(`✨ added "${text.trim()}" — no pressure.`);
+        }
+
+        // ---------- EVENT BINDING (ENSURES ALL BUTTONS WORK) ----------
+        function bindEvents() {
+            const avatarZone = getEl('avatarTapZone');
+            if (avatarZone) {
+                avatarZone.addEventListener('click', () => {
+                    recordInteraction();
+                    updateMessageBubble("👋 thanks. that's all i needed.");
+                });
+            }
+            
+            const logBtn = getEl('logSpendBtn');
+            if (logBtn) {
+                logBtn.addEventListener('click', () => {
+                    const input = getEl('spendAmount');
+                    const amount = parseFloat(input ? input.value : 0);
+                    if (amount && !isNaN(amount)) {
+                        logSpend(amount);
+                        updateMessageBubble(`💰 logged $${amount}. no judgment.`);
+                        if (input) input.value = '';
+                        wiggleAvatar();
+                    } else {
+                        updateMessageBubble("🌱 enter a number. even $1 counts.");
+                    }
+                });
+            }
+            
+            const whyBtn = getEl('whyBtn');
+            if (whyBtn) {
+                whyBtn.addEventListener('click', () => {
+                    const insight = getSelfInsight();
+                    updateMessageBubble(`🤔 ${insight}`);
+                    recordInteraction();
+                });
+            }
+            
+            const glitchBtn = getEl('glitchBtn');
+            if (glitchBtn) {
+                glitchBtn.addEventListener('click', () => {
+                    forceGlitch();
+                });
+            }
+            
+            const resetBtn = getEl('resetPanderBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    resetPander();
+                });
+            }
+            
+            const addTaskBtn = getEl('addTaskBtn');
+            if (addTaskBtn) {
+                addTaskBtn.addEventListener('click', () => {
+                    const input = getEl('newTaskInput');
+                    if (input) addNewTask(input.value);
+                });
+            }
+            
+            const newTaskInput = getEl('newTaskInput');
+            if (newTaskInput) {
+                newTaskInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') addNewTask(e.target.value);
+                });
+            }
+            
+            const careBtn = getEl('careBtn');
+            if (careBtn) {
+                careBtn.addEventListener('click', () => {
+                    const input = getEl('newTaskInput');
+                    if (input) {
+                        input.focus();
+                        updateMessageBubble("💚 add a tiny care task. 'exist' counts. i'm serious.");
+                    }
+                });
+            }
+        }
+
+        // ---------- AUTO-PANDER INTERVAL ----------
+        let panderInterval = null;
+        
+        function startPanderInterval() {
+            if (panderInterval) clearInterval(panderInterval);
+            panderInterval = setInterval(() => {
+                getNextAutoMessage();
+            }, 90 * 1000);
+        }
+
+        // ---------- INITIALIZATION ----------
+        function init() {
+            bindEvents();
+            renderTasks();
+            updateAvatarAccessories();
+            updateMessageBubble("🌱 sprout is awake. i get weird when ignored. tap me anytime.");
+            startPanderInterval();
+        }
+        
+        // Wait for DOM to be fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+</script>
+</body>
+</html>
