@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Sprout · Own Your Patterns</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+background: #f2ecd9;
+font-family: 'Segoe UI', 'Nunito', system-ui, -apple-system, sans-serif;
+padding: 20px;
+min-height: 100vh;
+}
+
+.container {
+max-width: 1200px;
+margin: 0 auto;
+}
+
+/* Header */
+.header {
+text-align: center;
+padding: 40px 20px 20px;
+}
+
+.header h1 {
+font-size: 2.5rem;
+color: #4a6741;
+letter-spacing: -0.5px;
+}
+
+.header p {
+color: #8b7d62;
+margin-top: 10px;
+font-size: 1.1rem;
+}
+
+/* Stats Banner */
+.stats-banner {
+background: #dce8d0;
+border-radius: 48px;
+padding: 24px;
+margin: 20px 0;
+display: flex;
+justify-content: space-around;
+flex-wrap: wrap;
+gap: 20px;
+border: 2px solid #c2d2ae;
+}
+
+.stat {
+text-align: center;
+}
+
+.stat-value {
+font-size: 2rem;
+font-weight: 800;
+color: #3a5a2a;
+}
+
+.stat-label {
+font-size: 0.8rem;
+color: #6c8260;
+margin-top: 5px;
+}
+
+/* Main Grid */
+.consent-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 20px;
+margin: 30px 0;
+}
+
+/* Consent Cards */
+.consent-card {
+background: white;
+border-radius: 32px;
+padding: 24px;
+border: 2px solid #e2cfaa;
+transition: all 0.2s;
+cursor: pointer;
+position: relative;
+}
+
+.consent-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+.consent-card.selected {
+border-color: #8bbd6e;
+background: #f8fff4;
+box-shadow: 0 0 0 3px #8bbd6e20;
+}
+
+.card-badge {
+position: absolute;
+top: -12px;
+right: 20px;
+background: #ffd966;
+padding: 4px 12px;
+border-radius: 20px;
+font-size: 0.7rem;
+font-weight: bold;
+color: #5a3e1a;
+}
+
+.card-icon {
+font-size: 3rem;
+margin-bottom: 16px;
+}
+
+.card-title {
+font-size: 1.3rem;
+font-weight: 700;
+margin-bottom: 8px;
+color: #3a4a2e;
+}
+
+.card-price {
+font-size: 1.5rem;
+font-weight: 800;
+color: #4a6741;
+margin: 12px 0;
+}
+
+.card-price small {
+font-size: 0.8rem;
+font-weight: normal;
+color: #8b7d62;
+}
+
+.card-features {
+list-style: none;
+margin: 16px 0;
+}
+
+.card-features li {
+padding: 6px 0;
+font-size: 0.85rem;
+color: #5a6e48;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.card-features li::before {
+content: "✓";
+color: #8bbd6e;
+font-weight: bold;
+}
+
+.select-btn {
+width: 100%;
+background: #e2d4b6;
+border: none;
+padding: 12px;
+border-radius: 60px;
+font-weight: 600;
+cursor: pointer;
+margin-top: 16px;
+transition: 0.1s;
+}
+
+.select-btn.selected {
+background: #8bbd6e;
+color: white;
+}
+
+/* Earnings Section */
+.earnings-section {
+background: linear-gradient(135deg, #2a5a3a, #3a6a4a);
+border-radius: 48px;
+padding: 32px;
+margin: 30px 0;
+color: white;
+}
+
+.earnings-title {
+font-size: 1.5rem;
+margin-bottom: 20px;
+}
+
+.earnings-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 20px;
+}
+
+.earning-card {
+background: rgba(255,255,255,0.15);
+border-radius: 24px;
+padding: 20px;
+backdrop-filter: blur(10px);
+}
+
+.earning-amount {
+font-size: 2rem;
+font-weight: 800;
+}
+
+.earning-label {
+font-size: 0.8rem;
+opacity: 0.8;
+margin-top: 8px;
+}
+
+.claim-btn {
+background: #ffd966;
+border: none;
+padding: 8px 16px;
+border-radius: 40px;
+margin-top: 12px;
+cursor: pointer;
+font-weight: 600;
+color: #5a3e1a;
+}
+
+/* Data Export */
+.export-section {
+background: #fffcf0;
+border-radius: 32px;
+padding: 24px;
+margin: 20px 0;
+border: 2px solid #e2cfaa;
+}
+
+.export-buttons {
+display: flex;
+gap: 12px;
+flex-wrap: wrap;
+margin-top: 16px;
+}
+
+.export-btn {
+background: #e2d4b6;
+border: none;
+padding: 10px 20px;
+border-radius: 40px;
+cursor: pointer;
+font-weight: 500;
+}
+
+/* Footer */
+.footer {
+text-align: center;
+padding: 30px;
+color: #b8a87c;
+font-size: 0.8rem;
+}
+
+/* Toast Message */
+.toast {
+position: fixed;
+bottom: 20px;
+right: 20px;
+background: #4a6741;
+color: white;
+padding: 12px 20px;
+border-radius: 60px;
+animation: slideIn 0.3s ease;
+z-index: 1000;
+}
+
+@keyframes slideIn {
+from {
+transform: translateX(100%);
+opacity: 0;
+}
+to {
+transform: translateX(0);
+opacity: 1;
+}
+}
+
+@media (max-width: 768px) {
+.stats-banner {
+flex-direction: column;
+text-align: center;
+}
+.header h1 {
+font-size: 1.8rem;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>🌱 Sprout · Your Patterns, Your Choice</h1>
+<p>You own your data. Choose how to share it — and get paid when others benefit.</p>
+</div>
+
+<!-- Stats Banner -->
+<div class="stats-banner" id="statsBanner">
+<div class="stat">
+<div class="stat-value" id="patternCount">0</div>
+<div class="stat-label">Patterns Found</div>
+</div>
+<div class="stat">
+<div class="stat-value" id="earnedAmount">$0</div>
+<div class="stat-label">You've Earned</div>
+</div>
+<div class="stat">
+<div class="stat-value" id="dataValue">$0</div>
+<div class="stat-label">Your Data Value</div>
+</div>
+<div class="stat">
+<div class="stat-value" id="contributionScore">0</div>
+<div class="stat-label">Community Score</div>
+</div>
+</div>
+
+<!-- Consent Cards Grid -->
+<h2 style="margin: 20px 0 10px; color: #4a6741;">Choose Your Sharing Level</h2>
+<div class="consent-grid" id="consentGrid"></div>
+
+<!-- Earnings / Bounties Section -->
+<div class="earnings-section" id="earningsSection">
+<div class="earnings-title">💰 Your Earnings & Bounties</div>
+<div class="earnings-grid" id="earningsGrid"></div>
+</div>
+
+<!-- Data Export / Transparency -->
+<div class="export-section">
+<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+<div>
+<strong>📊 Your Raw Patterns</strong><br>
+<small style="color: #8b7d62;">See exactly what Sprout knows about you. Export anytime.</small>
+</div>
+<div class="export-buttons">
+<button class="export-btn" id="exportJsonBtn">📄 Export as JSON</button>
+<button class="export-btn" id="exportCsvBtn">📊 Export as CSV</button>
+<button class="export-btn" id="deleteDataBtn" style="background: #f0d0c0;">🗑️ Delete All My Data</button>
+</div>
+</div>
+<div id="patternPreview" style="margin-top: 20px; background: #fef6e8; border-radius: 24px; padding: 16px; font-family: monospace; font-size: 12px; max-height: 200px; overflow: auto;">
+<em>Loading your patterns...</em>
+</div>
+</div>
+
+<div class="footer">
+🌱 Sprout is a data cooperative. You own everything. We just help you share it — on your terms.
+</div>
+</div>
+
+<script>
+// ============================================
+// SPROUT CONSENT DASHBOARD
+// No subscriptions. User owns their data.
+// ============================================
+
+// User data store (localStorage)
+let userData = {
+consentLevel: "local", // local, research, therapist, bounty
+patterns: {},
+earnings: {
+total: 0,
+bounties: [],
+researchContributions: 0,
+therapistReferrals: 0
+},
+createdAt: new Date().toISOString(),
+lastUpdated: new Date().toISOString()
+};
+
+// Consent levels configuration
+const CONSENT_LEVELS = {
+local: {
+name: "Local Only",
+icon: "🏠",
+description: "Sprout lives only on your device",
+price: "$0",
+badge: "Your Data Stays Yours",
+features: [
+"All patterns stay on your device",
+"Full avatar customization",
+"Glitch messages work offline",
+"No data ever leaves your browser"
+],
+userGets: "Free forever",
+revenue: 0
+},
+research: {
+name: "Research Partner",
+icon: "🔬",
+description: "Help ADHD science — anonymously",
+price: "$0",
+badge: "Get Free Pro Features",
+features: [
+"Anonymized patterns shared with researchers",
+"You get Sprout Pro for FREE",
+"Access to all glitch types",
+"Unlimited care tasks",
+"Voice input enabled"
+],
+userGets: "Sprout Pro ($60/year value)",
+revenue: 0,
+revenueSource: "Research institutions pay Sprout"
+},
+therapist: {
+name: "Therapist Share",
+icon: "🫂",
+description: "Share insights with your therapist",
+price: "$0",
+badge: "Therapist Pays — You're Free",
+features: [
+"Securely share patterns with your therapist",
+"Therapist sees weekly summaries (not transactions)",
+"You get Sprout Pro for FREE",
+"Export clinical notes for your records",
+"Therapist can suggest pattern discussions"
+],
+userGets: "Sprout Pro + Clinical Dashboard share",
+revenue: 0,
+revenueSource: "Your therapist pays $29/month (not you)"
+},
+bounty: {
+name: "Pattern Hunter",
+icon: "🦅",
+description: "Find patterns, get paid",
+price: "$0",
+badge: "Earn Real Money",
+features: [
+"Submit new patterns Sprout missed → get $5-50",
+"Verify patterns for other users → get $1 each",
+"Top hunters get monthly bonuses",
+"You keep 100% of what you earn",
+"Sprout Pro included"
+],
+userGets: "Sprout Pro + Cash Bounties",
+revenue: 0,
+revenueSource: "Bounties paid from research/therapist revenue"
+}
+};
+
+// Mock patterns (would come from actual behavior tracking)
+const MOCK_PATTERNS = {
+friday_atm: {
+name: "Friday ATM Habit",
+confidence: 0.92,
+value: "$80 average withdrawal",
+detected: "2024-01-15"
+},
+low_energy_spending: {
+name: "Low Energy → Spending",
+confidence: 0.78,
+value: "$25 average after low-energy days",
+detected: "2024-01-20"
+},
+social_evening: {
+name: "Social Evening Spending",
+confidence: 0.85,
+value: "Weekend nights +40% spending",
+detected: "2024-01-10"
+},
+productivity_cycle: {
+name: "Productivity Peak",
+confidence: 0.88,
+value: "Most productive at 10am-12pm",
+detected: "2024-01-05"
+}
+};
+
+// Bounty opportunities
+const BOUNTIES = [
+{ id: "b1", name: "Find a new weekly pattern", reward: 5, claimed: false },
+{ id: "b2", name: "Verify 'rainy day spending' pattern", reward: 2, claimed: false },
+{ id: "b3", name: "Submit a new glitch message", reward: 3, claimed: false },
+{ id: "b4", name: "Refer a therapist to Sprout Clinical", reward: 20, claimed: false }
+];
+
+// Load saved data
+function loadData() {
+const saved = localStorage.getItem('sprout_consent_data');
+if (saved) {
+try {
+const parsed = JSON.parse(saved);
+userData = { ...userData, ...parsed };
+} catch(e) {}
+}
+
+// Initialize patterns if empty
+if (Object.keys(userData.patterns).length === 0) {
+userData.patterns = MOCK_PATTERNS;
+}
+
+updateUI();
+}
+
+// Save data
+function saveData() {
+userData.lastUpdated = new Date().toISOString();
+localStorage.setItem('sprout_consent_data', JSON.stringify(userData));
+updateUI();
+}
+
+// Update consent level
+function setConsentLevel(level) {
+userData.consentLevel = level;
+
+// Show toast message
+showToast(`✓ Switched to ${CONSENT_LEVELS[level].name} mode`);
+
+// If switching to therapist mode, add referral bonus if therapist code exists
+if (level === 'therapist' && !userData.earnings.therapistReferrals) {
+userData.earnings.therapistReferrals = 1;
+userData.earnings.total += 29;
+showToast("🎉 You referred a therapist! +$29 credit");
+}
+
+saveData();
+}
+
+// Claim bounty
+function claimBounty(bountyId) {
+const bounty = BOUNTIES.find(b => b.id === bountyId);
+if (bounty && !bounty.claimed) {
+bounty.claimed = true;
+userData.earnings.bounties.push({
+id: bountyId,
+name: bounty.name,
+amount: bounty.reward,
+claimedAt: new Date().toISOString()
+});
+userData.earnings.total += bounty.reward;
+showToast(`🎉 Claimed $${bounty.reward} for "${bounty.name}"!`);
+saveData();
+}
+}
+
+// Export data as JSON
+function exportJSON() {
+const exportData = {
+exportedAt: new Date().toISOString(),
+consentLevel: userData.consentLevel,
+patterns: userData.patterns,
+earnings: userData.earnings,
+note: "You own this data. Sprout never sells it — we just help you share it on your terms."
+};
+
+const dataStr = JSON.stringify(exportData, null, 2);
+const blob = new Blob([dataStr], { type: 'application/json' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `sprout_export_${new Date().toISOString().slice(0,19)}.json`;
+a.click();
+URL.revokeObjectURL(url);
+showToast("📄 Patterns exported as JSON");
+}
+
+// Export as CSV
+function exportCSV() {
+const patterns = Object.entries(userData.patterns).map(([key, pattern]) => ({
+pattern_name: pattern.name,
+confidence: pattern.confidence,
+insight: pattern.value,
+detected: pattern.detected
+}));
+
+const headers = ["pattern_name", "confidence", "insight", "detected"];
+const csvRows = [headers.join(',')];
+
+for (const pattern of patterns) {
+const values = headers.map(h => `"${pattern[h] || ''}"`);
+csvRows.push(values.join(','));
+}
+
+const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `sprout_patterns_${new Date().toISOString().slice(0,19)}.csv`;
+a.click();
+URL.revokeObjectURL(url);
+showToast("📊 Patterns exported as CSV");
+}
+
+// Delete all data
+function deleteAllData() {
+if (confirm("⚠️ This will delete ALL your patterns and earnings. This cannot be undone. Continue?")) {
+localStorage.removeItem('sprout_consent_data');
+userData = {
+consentLevel: "local",
+patterns: MOCK_PATTERNS,
+earnings: { total: 0, bounties: [], researchContributions: 0, therapistReferrals: 0 },
+createdAt: new Date().toISOString(),
+lastUpdated: new Date().toISOString()
+};
+// Reset bounties claimed status
+BOUNTIES.forEach(b => b.claimed = false);
+saveData();
+showToast("🗑️ All your data has been deleted. Start fresh?");
+}
+}
+
+// Show toast notification
+function showToast(message) {
+const toast = document.createElement('div');
+toast.className = 'toast';
+toast.innerHTML = message;
+document.body.appendChild(toast);
+setTimeout(() => toast.remove(), 3000);
+}
+
+// Calculate data value for user
+function calculateDataValue() {
+const patternCount = Object.keys(userData.patterns).length;
+// Each pattern is worth about $5-20 to researchers/therapists
+const baseValue = patternCount * 8;
+const bountyEarned = userData.earnings.total;
+const totalValue = baseValue + bountyEarned;
+
+return {
+base: baseValue,
+withBounties: totalValue,
+patternValue: `~$${baseValue}`
+};
+}
+
+// Calculate contribution score (how much you've helped the community)
+function calculateContributionScore() {
+let score = 0;
+score += userData.earnings.bounties.length * 10; // 10 pts per bounty
+score += userData.earnings.researchContributions * 5; // 5 pts per research contribution
+score += userData.earnings.therapistReferrals * 15; // 15 pts per therapist referral
+
+// Bonus for being in higher consent levels
+if (userData.consentLevel === 'therapist') score += 20;
+if (userData.consentLevel === 'research') score += 10;
+if (userData.consentLevel === 'bounty') score += 25;
+
+return score;
+}
+
+// Render consent cards
+function renderConsentCards() {
+const grid = document.getElementById('consentGrid');
+if (!grid) return;
+
+grid.innerHTML = '';
+
+for (const [key, level] of Object.entries(CONSENT_LEVELS)) {
+const isSelected = userData.consentLevel === key;
+
+const card = document.createElement('div');
+card.className = `consent-card ${isSelected ? 'selected' : ''}`;
+card.innerHTML = `
+<div class="card-badge">${level.badge}</div>
+<div class="card-icon">${level.icon}</div>
+<div class="card-title">${level.name}</div>
+<div class="card-price">${level.price}<small> / forever</small></div>
+<ul class="card-features">
+${level.features.map(f => `<li>${f}</li>`).join('')}
+</ul>
+<div style="font-size: 0.75rem; color: #8b7d62; margin: 10px 0;">
+🎁 You get: ${level.userGets}
+</div>
+<button class="select-btn ${isSelected ? 'selected' : ''}" data-level="${key}">
+${isSelected ? '✓ Current Choice' : 'Select This Mode'}
+</button>
+`;
+
+grid.appendChild(card);
+}
+
+// Bind button events
+document.querySelectorAll('.select-btn[data-level]').forEach(btn => {
+btn.addEventListener('click', (e) => {
+e.stopPropagation();
+const level = btn.getAttribute('data-level');
+setConsentLevel(level);
+});
+});
+}
+
+// Render earnings section
+function renderEarnings() {
+const container = document.getElementById('earningsGrid');
+if (!container) return;
+
+const value = calculateDataValue();
+
+container.innerHTML = `
+<div class="earning-card">
+<div class="earning-amount">$${userData.earnings.total}</div>
+<div class="earning-label">Earned from Bounties</div>
+${userData.earnings.total === 0 ? '<button class="claim-btn" id="startBountiesBtn">🎯 Start Earning</button>' : ''}
+</div>
+<div class="earning-card">
+<div class="earning-amount">~$${value.base}</div>
+<div class="earning-label">Your Patterns' Value</div>
+<div class="earning-label" style="font-size: 0.7rem;">(if shared with research)</div>
+</div>
+<div class="earning-card">
+<div class="earning-amount">${userData.earnings.bounties.length}</div>
+<div class="earning-label">Bounties Claimed</div>
+</div>
+<div class="earning-card">
+<div class="earning-amount">${userData.earnings.therapistReferrals}</div>
+<div class="earning-label">Therapist Referrals</div>
+<div class="earning-label" style="font-size: 0.7rem;">($29 each to you)</div>
+</div>
+`;
+
+// Start earning button
+const startBtn = document.getElementById('startBountiesBtn');
+if (startBtn) {
+startBtn.addEventListener('click', () => {
+setConsentLevel('bounty');
+showToast("🎯 Bounty Hunter mode activated! Submit patterns to earn cash.");
+});
+}
+}
+
+// Render bounty list
+function renderBounties() {
+const container = document.getElementById('earningsSection');
+if (!container) return;
+
+// Add bounty list section if in bounty mode
+if (userData.consentLevel === 'bounty') {
+const existingBountyList = document.getElementById('bountyList');
+if (existingBountyList) existingBountyList.remove();
+
+const bountyDiv = document.createElement('div');
+bountyDiv.id = 'bountyList';
+bountyDiv.style.marginTop = '20px';
+bountyDiv.style.background = 'rgba(255,255,255,0.15)';
+bountyDiv.style.borderRadius = '24px';
+bountyDiv.style.padding = '16px';
+
+bountyDiv.innerHTML = `
+<div style="font-weight: bold; margin-bottom: 12px;">🎯 Active Bounties</div>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+${BOUNTIES.map(bounty => `
+<div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 20px;">
+<span>${bounty.name}</span>
+<div>
+<span style="background: #ffd966; color: #5a3e1a; padding: 4px 12px; border-radius: 20px; margin-right: 10px;">$${bounty.reward}</span>
+${!bounty.claimed ?
+`<button class="claim-bounty-btn" data-id="${bounty.id}" style="background: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer;">Claim</button>` :
+'<span style="color: #90a87a;">✓ Claimed</span>'
+}
+</div>
+</div>
+`).join('')}
+</div>
+<div style="font-size: 0.7rem; margin-top: 12px; opacity: 0.7;">
+💡 Tip: Submit patterns Sprout missed for bigger bounties!
+</div>
+`;
+
+container.appendChild(bountyDiv);
+
+// Bind claim buttons
+document.querySelectorAll('.claim-bounty-btn').forEach(btn => {
+btn.addEventListener('click', (e) => {
+const id = btn.getAttribute('data-id');
+claimBounty(id);
+renderBounties(); // Re-render
+});
+});
+}
+}
+
+// Render pattern preview
+function renderPatternPreview() {
+const container = document.getElementById('patternPreview');
+if (!container) return;
+
+const patterns = Object.values(userData.patterns);
+
+if (patterns.length === 0) {
+container.innerHTML = '<em>No patterns detected yet. Keep using Sprout — I\'ll find them.</em>';
+return;
+}
+
+container.innerHTML = patterns.map(pattern => `
+<div style="padding: 10px; border-bottom: 1px solid #e2cfaa;">
+<strong>${pattern.name}</strong><br>
+<span style="font-size: 11px; color: #8b7d62;">Confidence: ${Math.round(pattern.confidence * 100)}% | Detected: ${pattern.detected}</span><br>
+<span style="font-size: 12px;">${pattern.value}</span>
+</div>
+`).join('');
+}
+
+// Update all UI stats
+function updateUI() {
+document.getElementById('patternCount').innerText = Object.keys(userData.patterns).length;
+document.getElementById('earnedAmount').innerText = `$${userData.earnings.total}`;
+
+const dataValue = calculateDataValue();
+document.getElementById('dataValue').innerText = `$${dataValue.base}`;
+document.getElementById('contributionScore').innerText = calculateContributionScore();
+
+renderConsentCards();
+renderEarnings();
+renderBounties();
+renderPatternPreview();
+}
+
+// Bind export buttons
+function bindExportButtons() {
+const exportJson = document.getElementById('exportJsonBtn');
+if (exportJson) exportJson.addEventListener('click', exportJSON);
+
+const exportCsv = document.getElementById('exportCsvBtn');
+if (exportCsv) exportCsv.addEventListener('click', exportCSV);
+
+const deleteBtn = document.getElementById('deleteDataBtn');
+if (deleteBtn) deleteBtn.addEventListener('click', deleteAllData);
+}
+
+// Initialize
+function init() {
+loadData();
+bindExportButtons();
+updateUI();
+
+// Simulate some earnings if user has patterns but no earnings yet
+if (Object.keys(userData.patterns).length > 2 && userData.earnings.total === 0) {
+// Gentle nudge
+setTimeout(() => {
+showToast("💡 Your patterns are valuable! Consider Research or Bounty mode to earn.");
+}, 2000);
+}
+}
+
+init();
+</script>
+</body>
+</html>
