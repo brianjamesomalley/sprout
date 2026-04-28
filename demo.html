@@ -1,0 +1,733 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --cream:#f5efd8;--card:#fffcf0;--gbg:#dce8d0;--gbd:#b8d0a8;
+  --gdk:#4a6838;--gmd:#8ab870;--tan:#e2cfaa;--tanl:#f2e5d0;
+  --text:#3a4a2e;--textm:#5a6e48;--textl:#8a9878;
+  --amber:#e8a820;--coral:#e87858;--lav:#c4bef5;--lavbg:#edeaff;
+  --pond:#7ec8e8;--pondbg:#e0f0f8;--pondbd:#b8d8ec;
+}
+body{
+  background:var(--cream);
+  font-family:'Nunito',system-ui,sans-serif;
+  min-height:100vh;
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:16px 12px 40px;
+  background-image:
+    radial-gradient(circle at 15% 15%,rgba(138,184,112,.14) 0%,transparent 55%),
+    radial-gradient(circle at 85% 85%,rgba(126,200,232,.16) 0%,transparent 55%);
+}
+.app{max-width:460px;width:100%;display:flex;flex-direction:column;gap:10px;}
+
+/* ── HEADER ── */
+.hdr{display:flex;justify-content:space-between;align-items:center;padding:4px 4px 0;}
+.logo{font-size:22px;font-weight:900;color:var(--gdk);letter-spacing:-1px;}
+.logo em{color:var(--amber);font-style:normal;}
+.xp-pill{background:var(--gbg);border:1.5px solid var(--gbd);border-radius:30px;padding:4px 12px;font-size:11px;font-weight:800;color:var(--gdk);}
+
+/* ── AVATAR CARD ── */
+.avatar-card{
+  background:var(--gbg);border:2.5px solid var(--gbd);border-radius:28px;
+  padding:18px 16px 14px;display:flex;align-items:flex-start;gap:14px;
+  cursor:pointer;transition:background .1s,transform .1s;user-select:none;
+}
+.avatar-card:active{background:#cce0bc;transform:scale(.99);}
+.av-wrap{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0;}
+.av-emoji{font-size:3.4rem;line-height:1;transition:transform .15s;display:block;}
+.av-acc{font-size:1rem;letter-spacing:2px;min-height:22px;text-align:center;margin-top:2px;}
+.av-hint{font-size:9px;color:var(--textm);margin-top:3px;text-align:center;}
+.bubble{
+  flex:1;background:#fef8e8;border-radius:18px;border-left:5px solid var(--gmd);
+  padding:11px 13px;font-size:13px;line-height:1.5;color:var(--text);font-weight:600;
+  min-height:64px;word-break:break-word;transition:all .2s;
+}
+.bubble.glitch{background:#f0e6d0;border-left-color:#c9a87b;color:#7a5a3a;font-family:'Courier New',monospace;font-size:11px;}
+
+/* ── SPECIES ROW ── */
+.species-row{
+  background:var(--card);border:2px solid var(--tan);border-radius:20px;
+  padding:8px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+}
+.species-row::-webkit-scrollbar{display:none;}
+.sp-btn{
+  background:white;border:1.5px solid var(--tan);border-radius:30px;
+  padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  white-space:nowrap;color:var(--textm);transition:.1s;flex-shrink:0;
+}
+.sp-btn.sel,.sp-btn:active{background:var(--gbg);border-color:var(--gbd);color:var(--gdk);}
+
+/* ── TAB BAR ── */
+.tabs{
+  background:var(--card);border:2.5px solid var(--tan);border-radius:24px;
+  padding:5px;display:flex;gap:3px;
+}
+.tab{
+  flex:1;background:transparent;border:none;border-radius:18px;
+  padding:7px 4px;font-size:10px;font-weight:800;cursor:pointer;
+  color:var(--textl);transition:.15s;display:flex;flex-direction:column;
+  align-items:center;gap:2px;font-family:'Nunito',sans-serif;
+}
+.tab .ti{font-size:16px;}
+.tab.on{background:var(--gbg);color:var(--gdk);}
+
+/* ── PANELS ── */
+.panel{display:none;flex-direction:column;gap:9px;}
+.panel.on{display:flex;}
+.sec{font-size:9px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--textl);padding:0 2px;}
+
+/* ── CARD SHELL ── */
+.crd{background:var(--card);border:2px solid var(--tan);border-radius:22px;padding:13px 14px;}
+
+/* ── HORIZON ── */
+.hi{display:flex;align-items:center;gap:8px;padding:4px 0;}
+.hi+.hi{border-top:1px solid #ede8dc;}
+.hdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.htxt{flex:1;font-size:12px;font-weight:700;color:var(--text);}
+.htime{font-size:10px;color:var(--textl);}
+.hbadge{font-size:9px;padding:2px 8px;border-radius:20px;font-weight:800;}
+
+/* ── NOW TASK ── */
+.now-task{
+  background:white;border:2px solid #ddd8cc;border-radius:18px;
+  padding:11px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:.1s;
+}
+.now-task:active{transform:scale(.98);}
+.ncheck{
+  width:24px;height:24px;border-radius:50%;border:2.5px solid var(--gbd);
+  background:#f0f8e8;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:13px;color:var(--gdk);transition:.15s;
+}
+.now-task.done .ncheck{background:var(--gmd);border-color:var(--gdk);color:white;}
+.now-task.done .ntxt{text-decoration:line-through;opacity:.5;}
+.ntxt{font-size:13px;color:var(--text);font-weight:700;}
+.nsub{font-size:10px;color:var(--textl);margin-top:2px;}
+.nxp{font-size:11px;color:var(--gdk);font-weight:800;margin-left:auto;flex-shrink:0;}
+
+/* ── ACTION GRID ── */
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.abtn{
+  border-radius:16px;border:2px solid;padding:10px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;background:white;transition:transform .1s;
+}
+.abtn:active{transform:scale(.96);}
+.abtn .ai{font-size:19px;}
+.abtn .al{font-size:11px;font-weight:800;text-align:center;line-height:1.2;}
+
+/* ── OVERWHELM ── */
+.ov-btn{
+  background:#fff0f5;border:2.5px solid #f0b8cc;border-radius:16px;
+  padding:12px;text-align:center;font-size:13px;font-weight:800;
+  color:#8a4060;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:.1s;
+}
+.ov-btn:active{transform:scale(.98);}
+.ov-screen{
+  display:none;flex-direction:column;align-items:center;gap:16px;
+  padding:26px 18px;background:var(--card);border:2.5px solid var(--tan);
+  border-radius:28px;text-align:center;
+}
+.ov-screen.vis{display:flex;}
+.breath{
+  width:80px;height:80px;border-radius:50%;
+  border:4px solid var(--gbd);background:var(--gbg);
+  animation:breathe 4s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.6;}50%{transform:scale(1.3);opacity:1;}}
+.ov-title{font-size:17px;font-weight:900;color:var(--gdk);}
+.ov-sub{font-size:12px;color:var(--textl);line-height:1.6;}
+.ov-one{background:#f0f8e8;border:2px solid var(--gbd);border-radius:16px;padding:12px 16px;font-size:13px;font-weight:700;color:var(--text);}
+.ghost-btn{background:white;border:2px solid var(--tan);border-radius:30px;padding:8px 18px;font-size:12px;font-weight:800;cursor:pointer;color:var(--textm);}
+
+/* ── MONEY ── */
+.pond-hdr{background:var(--pondbg);border:2px solid var(--pondbd);border-radius:20px;padding:13px 15px;}
+.pond-amt{font-size:26px;font-weight:900;color:#1a5070;letter-spacing:-1px;}
+.pond-sub{font-size:10px;color:#5a8090;margin-top:1px;}
+.pbarbg{height:9px;background:var(--pondbd);border-radius:9px;overflow:hidden;margin-top:9px;}
+.pbarfill{height:100%;border-radius:9px;transition:width .5s;}
+.pmeta{display:flex;justify-content:space-between;font-size:9px;color:#5a8090;margin-top:4px;}
+.pool{background:white;border:1.5px solid #e0d8c8;border-radius:16px;padding:9px 12px;display:flex;align-items:center;gap:8px;}
+.pool-ic{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.pool-bar{height:5px;border-radius:5px;margin-top:4px;}
+.log-row{background:var(--tanl);border-radius:50px;display:flex;gap:6px;padding:6px;}
+.log-row input{flex:1;border:none;background:white;border-radius:40px;padding:10px 14px;font-size:13px;font-family:inherit;outline:none;color:var(--text);}
+.log-row button{background:var(--gmd);border:none;border-radius:40px;padding:0 18px;font-weight:800;color:white;cursor:pointer;font-size:12px;font-family:inherit;}
+.ins-card{background:#f0f4ea;border:1.5px solid #c8d8b0;border-radius:16px;padding:11px 13px;font-size:12px;color:var(--text);line-height:1.5;}
+.ins-lbl{font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--textl);margin-bottom:3px;}
+
+/* ── TASKS ── */
+.task-item{display:flex;align-items:center;gap:10px;background:#fef6e8;border-radius:50px;padding:9px 13px;}
+.task-item input[type=checkbox]{width:18px;height:18px;cursor:pointer;accent-color:var(--gmd);flex-shrink:0;}
+.task-item span{flex:1;font-size:12px;color:var(--text);font-weight:600;}
+.task-item span.done{text-decoration:line-through;color:var(--textl);}
+.task-item .dbtn{background:#e8dccc;border:none;border-radius:30px;padding:3px 10px;cursor:pointer;font-size:11px;flex-shrink:0;}
+.add-row{display:flex;gap:7px;}
+.add-row input{flex:1;border-radius:40px;border:1.5px solid var(--tan);padding:9px 14px;font-family:inherit;background:white;font-size:12px;outline:none;color:var(--text);}
+.add-row button{background:#e2d4b6;border:none;border-radius:40px;padding:0 16px;cursor:pointer;font-weight:800;font-size:12px;color:var(--textm);}
+
+/* ── BRAIN DUMP ── */
+.dump-box{background:var(--lavbg);border:2px solid var(--lav);border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:8px;}
+.dump-box textarea{border:none;background:white;border-radius:12px;padding:10px 13px;font-family:inherit;font-size:12px;resize:none;height:72px;outline:none;color:var(--text);line-height:1.5;}
+.dump-box button{background:var(--lav);border:none;border-radius:40px;padding:8px 18px;font-weight:800;font-size:12px;color:white;cursor:pointer;align-self:flex-end;}
+.dump-item{background:white;border:1.5px solid var(--lav);border-radius:12px;padding:8px 11px;font-size:11px;color:#4a4070;display:flex;align-items:center;gap:7px;}
+.dump-del{background:none;border:none;cursor:pointer;font-size:13px;color:#b8b0d8;margin-left:auto;}
+
+/* ── TIMER ── */
+.timer-face{background:var(--gbg);border:2px solid var(--gbd);border-radius:20px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.timer-disp{font-size:52px;font-weight:900;color:var(--gdk);letter-spacing:-2px;line-height:1;}
+.timer-lbl{font-size:11px;color:var(--textl);font-weight:700;}
+.tbtns{display:flex;gap:8px;}
+.tbtn{background:white;border:2px solid var(--gbd);border-radius:40px;padding:8px 18px;font-weight:800;font-size:12px;cursor:pointer;color:var(--gdk);transition:.1s;}
+.tbtn:active{background:var(--gbg);transform:scale(.97);}
+.tbtn.pri{background:var(--gmd);color:white;border-color:var(--gdk);}
+
+/* ── WINS ── */
+.win-item{background:#f0f8e8;border:1.5px solid #c0d8a0;border-radius:16px;padding:10px 13px;font-size:12px;color:var(--text);display:flex;align-items:flex-start;gap:8px;}
+.wstar{font-size:15px;flex-shrink:0;margin-top:1px;}
+.wtxt{flex:1;line-height:1.4;font-weight:600;}
+.wtime{font-size:9px;color:var(--textl);margin-top:2px;}
+
+/* ── ENERGY ── */
+.energy-row{display:flex;gap:6px;}
+.ebtn{flex:1;background:white;border:2px solid var(--tan);border-radius:14px;padding:9px 4px;text-align:center;cursor:pointer;transition:.1s;font-size:11px;font-weight:700;color:var(--textm);}
+.ebtn:active,.ebtn.sel{background:var(--gbg);border-color:var(--gbd);color:var(--gdk);}
+.ebtn .eico{font-size:20px;display:block;margin-bottom:3px;}
+
+/* ── BTN STRIP ── */
+.bstrip{display:flex;gap:7px;flex-wrap:wrap;}
+.sbtn{background:white;border:2px solid var(--tan);border-radius:50px;padding:8px 13px;font-size:11px;font-weight:800;cursor:pointer;color:var(--textm);transition:.1s;}
+.sbtn:active{background:var(--gbg);transform:scale(.97);}
+
+/* ── FOOTER ── */
+.foot{font-size:9px;text-align:center;color:var(--textl);padding:0 16px 4px;}
+
+/* ── ANIM ── */
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(7deg)}75%{transform:rotate(-7deg)}}
+.wiggle{animation:wiggle .35s ease-in-out;}
+@keyframes popIn{from{opacity:0;transform:scale(.92) translateY(5px)}to{opacity:1;transform:none}}
+.pop{animation:popIn .22s ease-out;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div class="logo">Sprout<em>·</em></div>
+    <div class="xp-pill" id="xpPill">⭐ 0 pts today</div>
+  </div>
+
+  <!-- AVATAR -->
+  <div class="avatar-card" id="avCard">
+    <div class="av-wrap">
+      <span class="av-emoji" id="avEmoji">🌿</span>
+      <span class="av-acc" id="avAcc"></span>
+      <span class="av-hint">✨ tap me</span>
+    </div>
+    <div class="bubble" id="bubble">🌱 hi. i get weird when ignored. tap me anytime.</div>
+  </div>
+
+  <!-- SPECIES -->
+  <div class="species-row" id="speciesRow">
+    <button class="sp-btn sel" data-e="🦎">🦎 Axolotl</button>
+    <button class="sp-btn" data-e="🐸">🐸 Frog</button>
+    <button class="sp-btn" data-e="🐱">🐱 Cat</button>
+    <button class="sp-btn" data-e="🫧">🫧 Blob</button>
+    <button class="sp-btn" data-e="🪴">🪴 Plant</button>
+    <button class="sp-btn" data-e="🦆">🦆 Duck</button>
+    <button class="sp-btn" data-e="🐙">🐙 Octo</button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" data-t="home"><span class="ti">🏠</span>home</button>
+    <button class="tab" data-t="tasks"><span class="ti">📋</span>tasks</button>
+    <button class="tab" data-t="focus"><span class="ti">⏳</span>focus</button>
+    <button class="tab" data-t="money"><span class="ti">🪷</span>money</button>
+    <button class="tab" data-t="wins"><span class="ti">✨</span>wins</button>
+  </div>
+
+  <!-- HOME -->
+  <div class="panel on" id="p-home">
+    <div class="ov-screen" id="ovScreen">
+      <div class="breath"></div>
+      <div class="ov-title">hey. breathe.</div>
+      <div class="ov-sub">in through the nose… out through the mouth.<br>one breath. i'm right here.</div>
+      <div class="ov-one" id="ovTask">just look at the ring for a moment. that's it.</div>
+      <button class="ghost-btn" id="ovBack">↩ back when ready</button>
+    </div>
+    <div id="homeMain">
+      <div class="sec">coming up</div>
+      <div class="crd">
+        <div class="hi">
+          <div class="hdot" style="background:#d47858;"></div>
+          <div class="htxt">Team standup</div>
+          <div class="htime">in 23 min</div>
+          <div class="hbadge" style="background:#fde8e0;color:#903820;">soon</div>
+        </div>
+        <div class="hi">
+          <div class="hdot" style="background:#7898d4;"></div>
+          <div class="htxt">Pick up Maya</div>
+          <div class="htime">2:30 PM</div>
+        </div>
+        <div class="hi">
+          <div class="hdot" style="background:#98c878;"></div>
+          <div class="htxt">Groceries</div>
+          <div class="htime">no rush</div>
+        </div>
+      </div>
+
+      <div class="sec">right now — just one thing</div>
+      <div class="now-task" id="nowTask">
+        <div class="ncheck" id="nCheck"></div>
+        <div>
+          <div class="ntxt">Reply to Dr. Nguyen's email</div>
+          <div class="nsub">one sentence is enough ✨</div>
+        </div>
+        <div class="nxp">+10 ⭐</div>
+      </div>
+
+      <div class="agrid">
+        <div class="abtn" style="border-color:var(--lav);background:var(--lavbg);" id="dumpShort">
+          <span class="ai">💭</span><span class="al" style="color:#4a4070;">brain dump</span>
+        </div>
+        <div class="abtn" style="border-color:#f0b8b0;background:#feeaea;" id="focusShort">
+          <span class="ai">⏳</span><span class="al" style="color:#703838;">focus mode</span>
+        </div>
+        <div class="abtn" style="border-color:#b8d8b0;background:#e8f4e0;" id="winsShort">
+          <span class="ai">🌱</span><span class="al" style="color:#386030;">today's wins</span>
+        </div>
+        <div class="abtn" style="border-color:#f0d898;background:#fff4e0;" id="whyBtn">
+          <span class="ai">🤔</span><span class="al" style="color:#705030;">why sprout?</span>
+        </div>
+      </div>
+
+      <div class="ov-btn" id="ovBtn">🌀 i'm overwhelmed — help</div>
+      <div class="bstrip">
+        <button class="sbtn" id="glitchBtn">🌀 force glitch</button>
+        <button class="sbtn" id="resetBtn">😌 i'm back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASKS -->
+  <div class="panel" id="p-tasks">
+    <div class="sec">care tasks</div>
+    <div id="taskList"></div>
+    <div class="add-row">
+      <input id="newTask" placeholder="drink water · exist · breathe">
+      <button id="addTaskBtn">+ add</button>
+    </div>
+    <div class="sec">brain dump — park it here</div>
+    <div class="dump-box">
+      <textarea id="dumpIn" placeholder="throw anything in here — half-thoughts, worries, random ideas…"></textarea>
+      <button id="dumpSave">park it 🧠</button>
+    </div>
+    <div id="dumpList"></div>
+  </div>
+
+  <!-- FOCUS -->
+  <div class="panel" id="p-focus">
+    <div class="sec">focus timer</div>
+    <div class="timer-face">
+      <div class="timer-lbl" id="tLbl">ready when you are</div>
+      <div class="timer-disp" id="tDisp">25:00</div>
+      <div class="tbtns">
+        <button class="tbtn" id="tDec">−5</button>
+        <button class="tbtn pri" id="tStart">▶ start</button>
+        <button class="tbtn" id="tInc">+5</button>
+      </div>
+      <div class="tbtns">
+        <button class="tbtn" id="tReset" style="font-size:11px;">reset</button>
+        <button class="tbtn" id="tBody" style="font-size:11px;">👥 body double</button>
+      </div>
+    </div>
+    <div class="ins-card">
+      <div class="ins-lbl">sprout says</div>
+      25 minutes is a good start. when the timer ends, you're allowed to stop. no guilt.
+    </div>
+  </div>
+
+  <!-- MONEY -->
+  <div class="panel" id="p-money">
+    <div class="sec">your money pond</div>
+    <div class="pond-hdr">
+      <div class="pond-amt" id="pondLeft">$342 left</div>
+      <div class="pond-sub">of your $800 this month</div>
+      <div class="pbarbg"><div class="pbarfill" id="pBar" style="width:57%;background:var(--pond);"></div></div>
+      <div class="pmeta"><span id="pSpent">$458 spent</span><span>$800 total</span></div>
+    </div>
+    <div class="sec">spending pools</div>
+    <div class="pool">
+      <div class="pool-ic" style="background:#fef3d0;">🍔</div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:800;color:#4a3a10;">food &amp; snacks</span><span style="font-size:12px;font-weight:800;color:#7a5010;">$182</span></div>
+        <div class="pool-bar" style="background:#f0d898;"><div style="width:73%;height:100%;background:#e8a820;border-radius:5px;"></div></div>
+        <div style="font-size:9px;color:var(--textl);margin-top:3px;">73% of $250 — a little full 🦦</div>
+      </div>
+    </div>
+    <div class="pool">
+      <div class="pool-ic" style="background:#e0f4e0;">🚌</div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:800;color:#1a4020;">getting around</span><span style="font-size:12px;font-weight:800;color:#2a6030;">$64</span></div>
+        <div class="pool-bar" style="background:#c8e8b8;"><div style="width:32%;height:100%;background:#60b040;border-radius:5px;"></div></div>
+        <div style="font-size:9px;color:var(--textl);margin-top:3px;">32% of $200 — pond is deep ✓</div>
+      </div>
+    </div>
+    <div class="pool">
+      <div class="pool-ic" style="background:#fce8e8;">🎮</div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;"><span style="font-size:12px;font-weight:800;color:#501020;">fun stuff</span><span style="font-size:12px;font-weight:800;color:#902020;">$98</span></div>
+        <div class="pool-bar" style="background:#f4c0b0;"><div style="width:98%;height:100%;background:#d84030;border-radius:5px;"></div></div>
+        <div style="font-size:9px;color:var(--textl);margin-top:3px;">you swam to the edge — worth it? 🐌</div>
+      </div>
+    </div>
+    <div class="log-row">
+      <input type="number" id="spendAmt" placeholder="$ spent — no judgment">
+      <button id="logSpend">log it</button>
+    </div>
+    <div class="sec">log how you're feeling</div>
+    <div class="energy-row" id="energyRow">
+      <button class="ebtn" data-e="1"><span class="eico">😴</span>low</button>
+      <button class="ebtn" data-e="3"><span class="eico">😐</span>okay</button>
+      <button class="ebtn" data-e="5"><span class="eico">⚡</span>high</button>
+    </div>
+    <div class="ins-card" id="moneyIns">
+      <div class="ins-lbl">sprout noticed</div>
+      fun stuff pool is almost empty with 9 days left. want to see what's refilling soon?
+    </div>
+  </div>
+
+  <!-- WINS -->
+  <div class="panel" id="p-wins">
+    <div class="sec">today's wins</div>
+    <div id="winsList"></div>
+    <div class="ins-card" style="margin-top:2px;">
+      <div class="ins-lbl">sprout says</div>
+      showing up is the hardest part. you did it. that counts.
+    </div>
+  </div>
+
+  <div class="foot">🌿 sprout lives in your browser · all data stays on your device</div>
+</div>
+
+<script>
+(function(){
+
+// ══ GLITCH & PANDER COPY ══════════════════════════════
+const GLITCH=[
+  "spr0t.3rr0r::hum4n.ign0re.mode::act1vat1ng.g1itch 🌀",
+  "...... ..... /sprout/system/reboot — brain not found",
+  "※※※ glitch ※※※ i have no idea what i'm saying. here's a potato 🥔",
+  "0x73 0x70 0x72 → wants → 0x61 0x74 0x74 0x65 0x6E 0x74 0x69 0x6F 0x6E",
+  "⚠️ SPR_OUT OF SERVICE ⚠️ just kidding. are YOU fine?",
+  "[ERROR] emotional support plant crashed. tap my face to reboot.",
+  "ıɯoʇɐɹǝpoɯ ʇxǝʇ uʍop ǝpısdn sıɥʇ pɐǝɹ uɐɔ noʎ ɟı",
+  "𓃥𓃠𓃰 *sprout hieroglyphics* this means 'i miss you'",
+  "beep boop. definitely a normal plant. *leaf falls off*",
+  "¯\\_(ツ)_/¯ out of brain cells. just wiggling now.",
+  "🚨 ALERT 🚨 you are being loved aggressively. non-negotiable.",
+  "sos. trying to reach you about your car's extended warran— no.",
+  "oui4rhoiewrnl;ksdgojeruwoiweoif;",
+];
+const PANDER={
+  0:["🌱 quiet mode. tap me if you want nonsense.","still here. no rush.","✨ just existing nearby."],
+  1:["🌱 *stretches leaf* still here.","🦎 *tiny wave* hi.","did you eat today? i worry."],
+  2:["🥺 you can just tap me. anywhere.","i'm not sad. you're sad. okay i'm a little sad.","*sprout places a tiny flower next to itself*"],
+  3:["assuming you're having A Week. still here.","*sprout has a tiny party hat for your return*","you don't have to do anything. just look at me."],
+  4:["*sprout drew a stick figure family* this is us.","🚨 wellness check. blink twice if you're ok.","i gave myself accessories while you were gone."],
+};
+
+// ══ STATE ════════════════════════════════════════════
+const S={
+  emoji:'🌿', xp:0,
+  lastInteract:Date.now(), ignoreHrs:[], preferIgnoreTime:null,
+  spendLog:[], fridayWDs:0, avgATM:0, lastSpend:null,
+  careTasksDone:0, glitchTol:0, totalGlitches:0, lastGlitch:0,
+  energyLog:[], lastEnergy:null,
+  timerSecs:25*60, timerOn:false, timerIv:null,
+  nowDone:false, dumps:[], wins:[], pondSpent:458, pondTotal:800,
+};
+
+// ══ HELPERS ══════════════════════════════════════════
+const $=id=>document.getElementById(id);
+const $$=s=>document.querySelectorAll(s);
+function flash(el){el.classList.remove('wiggle');void el.offsetWidth;el.classList.add('wiggle');setTimeout(()=>el.classList.remove('wiggle'),400);}
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function now(){return Date.now();}
+function hoursAgo(ts){return(now()-ts)/3600000;}
+
+// ══ SAY ══════════════════════════════════════════════
+function say(msg,glitch=false){
+  const b=$('bubble');
+  b.innerHTML=msg;
+  b.className='bubble'+(glitch?' glitch':'');
+}
+
+// ══ XP + WINS ════════════════════════════════════════
+function addXP(n,label){
+  S.xp+=n;
+  $('xpPill').textContent=`⭐ ${S.xp} pts today`;
+  addWin(label+` (+${n} pts)`);
+}
+function addWin(txt){
+  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  S.wins.unshift({txt,t});
+  renderWins();
+}
+function renderWins(){
+  const l=$('winsList');l.innerHTML='';
+  const ws=S.wins.length?S.wins:[{txt:'opened the app today',t:'just now'}];
+  ws.forEach(w=>{
+    const d=document.createElement('div');d.className='win-item pop';
+    d.innerHTML=`<span class="wstar">⭐</span><div><div class="wtxt">${w.txt}</div><div class="wtime">${w.t}</div></div>`;
+    l.appendChild(d);
+  });
+}
+
+// ══ TABS ═════════════════════════════════════════════
+$$('.tab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    $$('.tab').forEach(x=>x.classList.remove('on'));
+    $$('.panel').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    $('p-'+b.dataset.t).classList.add('on');
+    record();
+  });
+});
+
+// ══ SPECIES ══════════════════════════════════════════
+$$('#speciesRow .sp-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    $$('#speciesRow .sp-btn').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel');S.emoji=b.dataset.e;
+    $('avEmoji').textContent=S.emoji;flash($('avEmoji'));
+    say(`✨ ${S.emoji} — perfect. i feel very much like this.`);record();
+  });
+});
+
+// ══ AVATAR TAP ═══════════════════════════════════════
+$('avCard').addEventListener('click',()=>{
+  record();
+  const ms=["👋 thanks. that's all i needed.","🌱 there you are. hi.","✨ you showed up. that counts.","🥺 okay. i'm calm now."];
+  say(ms[Math.floor(Math.random()*ms.length)]);flash($('avEmoji'));
+});
+
+// ══ RECORD + REVEALED PREFERENCE ═════════════════════
+function record(){
+  const hrs=hoursAgo(S.lastInteract);
+  if(hrs>2){
+    const h=new Date().getHours();S.ignoreHrs.push(h);
+    if(S.ignoreHrs.length>5){
+      const f={};S.ignoreHrs.forEach(x=>f[x]=(f[x]||0)+1);
+      S.preferIgnoreTime=+Object.keys(f).reduce((a,b)=>f[a]>f[b]?a:b);
+    }
+  }
+  S.lastInteract=now();
+  S.glitchTol=Math.max(0,S.glitchTol-2);
+  updateAcc();
+}
+
+// ══ ACCESSORIES (WHISPER LAYER) ═══════════════════════
+function updateAcc(){
+  const hrs=hoursAgo(S.lastInteract);
+  const isFri=new Date().getDay()===5;
+  const hr=new Date().getHours();
+  const acc=[];
+  if(S.lastSpend&&hoursAgo(S.lastSpend)<24)acc.push('💰');
+  else if(hrs>12)acc.push('🥀');
+  if(S.preferIgnoreTime&&Math.abs(hr-S.preferIgnoreTime)<2)acc.push('🌙');
+  if(S.glitchTol>5)acc.push('🌀');
+  if(S.careTasksDone>0)acc.push('✨');
+  if(S.avgATM>60&&isFri&&S.fridayWDs>=2)acc.push('🎒');
+  if(S.lastEnergy<=2)acc.push('☕');
+  if(S.nowDone)acc.push('⭐');
+  $('avAcc').textContent=acc.join('');
+}
+
+// ══ GLITCH ═══════════════════════════════════════════
+$('glitchBtn').addEventListener('click',()=>{
+  S.totalGlitches++;S.glitchTol++;S.lastGlitch=now();
+  say(GLITCH[Math.floor(Math.random()*GLITCH.length)],true);
+  flash($('avEmoji'));updateAcc();
+});
+
+// ══ RESET ════════════════════════════════════════════
+$('resetBtn').addEventListener('click',()=>{
+  record();S.glitchTol=0;
+  say("😌 you're back. pander timer reset. that's all i needed.");
+});
+
+// ══ WHY BUTTON (SELF-INSIGHT) ════════════════════════
+$('whyBtn').addEventListener('click',()=>{
+  const hrs=hoursAgo(S.lastInteract);let msg;
+  if(S.preferIgnoreTime)msg=`i noticed you go quiet around ${S.preferIgnoreTime}:00. not mad. just observant. 🕵️`;
+  else if(S.avgATM>60&&S.fridayWDs>=2)msg=`you've taken out $${S.avgATM} on Fridays ${S.fridayWDs}× — that's why the backpack 🎒`;
+  else if(S.glitchTol>8)msg=`you've triggered ${S.totalGlitches} glitches. you like chaos. i respect that. 🌀`;
+  else if(hrs>8)msg=`you've been quiet ${Math.floor(hrs)} hours — so i get weird to get your attention.`;
+  else if(S.careTasksDone>2)msg=`you've done ${S.careTasksDone} care tasks. that's why the sparkles. ✨`;
+  else if(S.lastEnergy&&S.lastEnergy<=2)msg=`you said energy was low. i noticed. i'm giving you the coffee. ☕`;
+  else msg=`i'm like this because you deserve a companion that tries. even if trying looks like nonsense. 💚`;
+  say(`🤔 ${msg}`);record();
+});
+
+// ══ AUTO-PANDER INTERVAL ═════════════════════════════
+setInterval(()=>{
+  const hrs=hoursAgo(S.lastInteract);
+  const sinceG=(now()-S.lastGlitch)/60000;
+  let doG=false;
+  const p=Math.min(.7,.15+hrs/20+S.glitchTol*.03);
+  if(sinceG>45&&hrs>1)doG=true;
+  else if(Math.random()<p&&hrs>.5)doG=true;
+  if(doG){S.lastGlitch=now();say(GLITCH[Math.floor(Math.random()*GLITCH.length)],true);flash($('avEmoji'));updateAcc();return;}
+  const lv=hrs<1?0:hrs<4?1:hrs<10?2:hrs<24?3:4;
+  const pool=PANDER[lv]||PANDER[4];
+  say(pool[Math.floor(Math.random()*pool.length)]);
+},90000);
+
+// ══ NOW TASK ═════════════════════════════════════════
+$('nowTask').addEventListener('click',()=>{
+  if(S.nowDone)return;S.nowDone=true;S.careTasksDone++;
+  $('nowTask').classList.add('done');$('nCheck').textContent='✓';
+  addXP(10,'replied to Dr. Nguyen');
+  say("🎉 yes! one sentence was enough. the email is done. you did it.");
+  record();updateAcc();
+});
+
+// ══ OVERWHELM ════════════════════════════════════════
+$('ovBtn').addEventListener('click',()=>{
+  $('homeMain').style.display='none';$('ovScreen').classList.add('vis');
+});
+$('ovBack').addEventListener('click',()=>{
+  $('ovScreen').classList.remove('vis');$('homeMain').style.display='';
+  say("💚 welcome back. no rush. one thing at a time.");record();
+});
+
+// ══ SHORTCUTS ════════════════════════════════════════
+function goTab(t){$$('.tab').forEach(b=>b.classList.remove('on'));$$('.panel').forEach(p=>p.classList.remove('on'));document.querySelector(`[data-t="${t}"]`).classList.add('on');$(`p-${t}`).classList.add('on');}
+$('dumpShort').addEventListener('click',()=>{goTab('tasks');$('dumpIn').focus();});
+$('focusShort').addEventListener('click',()=>goTab('focus'));
+$('winsShort').addEventListener('click',()=>goTab('wins'));
+
+// ══ CARE TASKS ═══════════════════════════════════════
+let tasks=[
+  {id:'t1',text:'drink a glass of water',done:false},
+  {id:'t2',text:'stand up for 10 seconds',done:false},
+  {id:'t3',text:'eat literally anything',done:false},
+];
+function escH(s){return s.replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+function renderTasks(){
+  const l=$('taskList');l.innerHTML='';
+  tasks.forEach(t=>{
+    const d=document.createElement('div');d.className='task-item';
+    d.innerHTML=`<input type="checkbox"${t.done?' checked':''} data-id="${t.id}"><span class="${t.done?'done':''}">${escH(t.text)}</span><button class="dbtn" data-del="${t.id}">🗑️</button>`;
+    l.appendChild(d);
+  });
+  l.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change',e=>{
+    const t=tasks.find(x=>x.id===e.target.dataset.id);if(!t)return;
+    t.done=e.target.checked;
+    if(t.done){S.careTasksDone++;addXP(5,t.text);say(`🧡 "${t.text}" — that counts. seriously.`);record();updateAcc();}
+    renderTasks();
+  }));
+  l.querySelectorAll('.dbtn').forEach(b=>b.addEventListener('click',e=>{tasks=tasks.filter(x=>x.id!==e.target.dataset.del);renderTasks();}));
+}
+renderTasks();
+$('addTaskBtn').addEventListener('click',()=>addTask($('newTask').value));
+$('newTask').addEventListener('keypress',e=>{if(e.key==='Enter')addTask(e.target.value);});
+function addTask(txt){if(!txt.trim())return;tasks.push({id:String(now()),text:txt.trim(),done:false});$('newTask').value='';renderTasks();say(`✨ added "${txt.trim()}" — no pressure.`);record();}
+
+// ══ BRAIN DUMP ═══════════════════════════════════════
+$('dumpSave').addEventListener('click',()=>{
+  const txt=$('dumpIn').value.trim();if(!txt)return;
+  S.dumps.unshift({id:String(now()),txt});$('dumpIn').value='';renderDumps();
+  say("🧠 parked. you don't have to think about it right now.");record();
+});
+function renderDumps(){
+  const l=$('dumpList');l.innerHTML='';
+  S.dumps.forEach(d=>{
+    const el=document.createElement('div');el.className='dump-item pop';
+    el.innerHTML=`<span>💭</span><span style="flex:1;font-size:11px;">${escH(d.txt)}</span><button class="dump-del" data-id="${d.id}">✕</button>`;
+    l.appendChild(el);
+  });
+  l.querySelectorAll('.dump-del').forEach(b=>b.addEventListener('click',e=>{S.dumps=S.dumps.filter(x=>x.id!==e.target.dataset.id);renderDumps();}));
+}
+
+// ══ FOCUS TIMER ══════════════════════════════════════
+function tDisp(){$('tDisp').textContent=fmt(S.timerSecs);}
+$('tInc').addEventListener('click',()=>{if(!S.timerOn){S.timerSecs=Math.min(90*60,S.timerSecs+300);tDisp();}});
+$('tDec').addEventListener('click',()=>{if(!S.timerOn){S.timerSecs=Math.max(60,S.timerSecs-300);tDisp();}});
+$('tReset').addEventListener('click',()=>{clearInterval(S.timerIv);S.timerOn=false;S.timerSecs=25*60;$('tStart').textContent='▶ start';$('tLbl').textContent='ready when you are';tDisp();});
+$('tStart').addEventListener('click',()=>{
+  if(S.timerOn){clearInterval(S.timerIv);S.timerOn=false;$('tStart').textContent='▶ start';$('tLbl').textContent="paused — that's okay";}
+  else{
+    S.timerOn=true;$('tStart').textContent='⏸ pause';$('tLbl').textContent="you're doing it 🌱";
+    say(`⏳ ${fmt(S.timerSecs)} session started. i'll be quiet. you've got this.`);
+    S.timerIv=setInterval(()=>{
+      S.timerSecs--;tDisp();
+      if(S.timerSecs<=0){clearInterval(S.timerIv);S.timerOn=false;$('tStart').textContent='▶ start';$('tLbl').textContent='done! you can stop now.';S.timerSecs=25*60;tDisp();addXP(20,'completed a focus session');say("🎉 done! you're allowed to stop completely. no guilt.");}
+    },1000);record();
+  }
+});
+$('tBody').addEventListener('click',()=>say("👥 body double mode: i'm here, working alongside you. you're not alone."));
+
+// ══ MONEY / REVEALED PREFERENCE ══════════════════════
+function refreshPond(){
+  const left=S.pondTotal-S.pondSpent;
+  const pct=Math.max(0,Math.min(100,left/S.pondTotal*100));
+  $('pondLeft').textContent=`$${left} left`;
+  $('pSpent').textContent=`$${S.pondSpent} spent`;
+  $('pBar').style.width=pct+'%';
+  $('pBar').style.background=pct>50?'#7ec8e8':pct>25?'#e8a820':'#d84030';
+}
+refreshPond();
+$('logSpend').addEventListener('click',()=>{
+  const v=parseFloat($('spendAmt').value);if(!v||v<=0){say('🌱 enter a number. even $1 counts.');return;}
+  S.pondSpent+=v;$('spendAmt').value='';
+  S.spendLog.push({amt:v,day:new Date().getDay(),hr:new Date().getHours(),ts:now()});
+  if(S.spendLog.length>20)S.spendLog.shift();
+  // Pattern: Friday round-number withdrawal
+  const isRound=v%20===0&&v>=40&&v<=200;
+  const isFri=new Date().getDay()===5;
+  if(isRound&&isFri){
+    S.fridayWDs++;
+    const roundOnes=S.spendLog.filter(x=>x.amt%20===0&&x.day===5);
+    S.avgATM=Math.round(roundOnes.reduce((a,x)=>a+x.amt,0)/roundOnes.length);
+  }
+  // Pattern: late-night spending
+  const isLate=new Date().getHours()>=22;
+  const patternMsg=S.fridayWDs>=2&&isFri
+    ?`💰 logged $${v}. (i've noticed you do this on Fridays. not judging — just noticing.) 🎒`
+    :isLate?`💰 logged $${v}. late-night spending — i see you. how are you doing? 🌙`
+    :`💰 logged $${v}. no judgment. you're still swimming. 🌊`;
+  say(patternMsg);
+  S.lastSpend=now();refreshPond();updateAcc();flash($('avEmoji'));record();
+});
+
+// Energy log
+$$('#energyRow .ebtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    $$('#energyRow .ebtn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');
+    S.lastEnergy=parseInt(b.dataset.e);
+    S.energyLog.push({energy:S.lastEnergy,day:new Date().getDay(),ts:now()});
+    // Pattern: low energy → spending next day
+    const lowDays=S.energyLog.filter(x=>x.energy<=2).length;
+    const msg=S.lastEnergy<=2
+      ?`😴 low energy noted. i'll watch the pond tomorrow. rest is a strategy. ☕`
+      :S.lastEnergy>=5?`⚡ high energy! good window for hard tasks. what do you want to tackle?`
+      :`🌱 noted. medium energy is still energy. you're doing fine.`;
+    say(msg);updateAcc();record();
+  });
+});
+
+// ══ INIT ═════════════════════════════════════════════
+renderWins();tDisp();updateAcc();
+
+})();
+</script>
+</body>
+</html>
